@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Local-first EBL hole-array geometry checker for nanofabrication pattern review." />
+  <title>EBL Pattern Checker</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">NANOFAB TOOLKIT</p>
+      <h1>EBL Pattern Checker</h1>
+      <p class="subtitle">Validate 1D hole arrays before pattern transfer.</p>
+    </div>
+    <div class="badge">Local-first · no upload</div>
+  </header>
+
+  <main class="layout">
+    <section class="panel input-panel">
+      <div class="section-head">
+        <div><span class="step">01</span><h2>Pattern input</h2></div>
+        <button id="loadExample" class="ghost">Load example</button>
+      </div>
+      <p class="hint">Paste CSV/TSV rows as <code>position_nm, diameter_nm, region</code>. Header is optional.</p>
+      <textarea id="patternInput" spellcheck="false" placeholder="position_nm,diameter_nm,region&#10;-6700,250,Mirror&#10;-6150,250,Mirror&#10;-5600,250,Mirror"></textarea>
+      <div class="controls">
+        <label>Minimum edge gap (nm)<input id="minGap" type="number" value="100" min="0" step="1"></label>
+        <label>Max diameter step (nm)<input id="maxDiaStep" type="number" value="20" min="0" step="1"></label>
+      </div>
+      <div class="actions">
+        <button id="analyze" class="primary">Analyze pattern</button>
+        <button id="clear" class="secondary">Clear</button>
+      </div>
+      <div id="message" class="message" aria-live="polite"></div>
+    </section>
+
+    <section class="panel summary-panel">
+      <div class="section-head"><div><span class="step">02</span><h2>Geometry summary</h2></div></div>
+      <div class="metrics">
+        <div><span id="mHoles">0</span><small>holes</small></div>
+        <div><span id="mSpan">—</span><small>array span</small></div>
+        <div><span id="mMinGap">—</span><small>minimum gap</small></div>
+        <div><span id="mFlags">0</span><small>flags</small></div>
+      </div>
+      <div class="legend"><span><i class="ok"></i>Pass</span><span><i class="warn"></i>Review</span><span><i class="bad"></i>Violation</span></div>
+      <div class="canvas-wrap"><canvas id="patternCanvas" width="1100" height="300"></canvas></div>
+      <p class="caption">Schematic visualization; dimensions are calculated from numeric input. Circle size is scaled for readability.</p>
+    </section>
+
+    <section class="panel table-panel">
+      <div class="section-head">
+        <div><span class="step">03</span><h2>Calculated geometry</h2></div>
+        <button id="exportCsv" class="ghost" disabled>Export CSV</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Position (nm)</th><th>Diameter (nm)</th><th>c2c prev. (nm)</th><th>Edge gap (nm)</th><th>Region</th><th>Status</th></tr></thead>
+          <tbody id="resultsBody"><tr><td colspan="7" class="empty">Analyze a pattern to populate results.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel notes-panel">
+      <div class="section-head"><div><span class="step">04</span><h2>Checks performed</h2></div></div>
+      <ul>
+        <li>Sorts holes by center position and detects duplicate centers.</li>
+        <li>Computes center-to-center spacing and edge-to-edge gap for adjacent holes.</li>
+        <li>Flags edge gaps below the user-defined fabrication threshold.</li>
+        <li>Flags abrupt adjacent diameter changes above the user-defined taper threshold.</li>
+      </ul>
+      <p class="warning"><strong>Engineering note:</strong> this is a geometry pre-check, not a substitute for CAD/EBL tool validation, proximity-effect correction, process-bias calibration, or microscope/metrology review.</p>
+    </section>
+  </main>
+  <footer>EBL Pattern Checker · static browser application · data stays in the browser</footer>
+  <script src="app.js"></script>
+</body>
+</html>
